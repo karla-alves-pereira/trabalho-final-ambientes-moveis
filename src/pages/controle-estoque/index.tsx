@@ -1,27 +1,16 @@
-
 import React from 'react';
-import {
-  View,
-  Text,
-} from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useEstoque } from '../../context/EstoqueContext';
+import { styles } from './styles';
 
 export default function ControleEstoque() {
-  const nomeProduto = 'Produto Exemplo';
-  const quantidadeAtual = 5;
-  const estoqueBaixo = quantidadeAtual <= 5;
+  const { produtos } = useEstoque();
 
   return (
-    <View style={{
-      flex: 1,
-      backgroundColor: '#F5F6FA',
-      padding: 25,
-    }}>
-            <View style={{
-        alignItems: 'center',
-        marginTop: 35,
-        marginBottom: 35,
-      }}>
+    <View style={styles.container}>
+
+      <View style={styles.header}>
         <MaterialIcons
           name="inventory-2"
           size={45}
@@ -29,81 +18,98 @@ export default function ControleEstoque() {
         />
       </View>
 
-      <View style={{
-        backgroundColor: '#FFF',
-        padding: 22,
-        borderRadius: 12,
-        marginBottom: 20,
-      }}>
-        <Text style={{
-          fontSize: 14,
-          color: '#777',
-          marginBottom: 8,
-        }}>
-          Nome do Produto
-        </Text>
+     <FlatList
+      style={styles.lista}
+      data={produtos}
+      keyExtractor={(item) => item.id}
+      showsVerticalScrollIndicator={true}
+      scrollEnabled={true}
 
-        <Text style={{
-          fontSize: 20,
-          fontWeight: 'bold',
-          color: '#222',
-        }}>
-          {nomeProduto}
-        </Text>
-      </View>
+        ListEmptyComponent={
+          <View style={styles.listaVazia}>
+            <MaterialIcons
+              name="inventory-2"
+              size={55}
+              color="#AAA"
+            />
 
-      <View style={{
-        backgroundColor: '#FFF',
-        padding: 22,
-        borderRadius: 12,
-        marginBottom: 20,
-      }}>
-        <Text style={{
-          fontSize: 14,
-          color: '#777',
-          marginBottom: 8,
-        }}>
-          Quantidade Atual
-        </Text>
+            <Text style={styles.textoVazio}>
+              Nenhum produto cadastrado
+            </Text>
 
-        <Text style={{
-          fontSize: 28,
-          fontWeight: 'bold',
-          color: '#222',
-        }}>
-          {quantidadeAtual} unidades
-        </Text>
-      </View>
+            <Text style={styles.subtituloVazio}>
+              Cadastre um produto para visualizar o estoque.
+            </Text>
+          </View>
+        }
 
-      <View style={{
-        backgroundColor: '#FFF',
-        padding: 22,
-        borderRadius: 12,
-        alignItems: 'center',
-      }}>
-        <MaterialIcons
-          name={estoqueBaixo ? 'warning' : 'check-circle'}
-          size={35}
-          color={estoqueBaixo ? '#E69500' : '#228B22'}
-        />
+        renderItem={({ item }) => {
+          const estoqueBaixo = item.quantidade <= 5;
 
-        <Text style={{
-          fontSize: 14,
-          color: '#777',
-          marginTop: 10,
-        }}>
-          Status do Estoque
-        </Text>
+          return (
+            <View style={styles.card}>
 
-        <Text style={{
-          fontSize: 20,
-          fontWeight: 'bold',
-          color: estoqueBaixo ? '#E69500' : '#228B22',
-          marginTop: 5,
-        }}>
-          {estoqueBaixo ? 'Estoque Baixo' : 'Em Estoque'}
-        </Text>
-      </View>
+              <Text style={styles.label}>
+                Nome do Produto
+              </Text>
+
+              <Text style={styles.nomeProduto}>
+                {item.nome}
+              </Text>
+
+              <Text style={styles.label}>
+                Preço de Venda
+              </Text>
+
+              <Text style={styles.preco}>
+                {item.preco.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                })}
+              </Text>
+
+              <Text style={styles.label}>
+                Quantidade Atual
+              </Text>
+
+              <Text style={styles.quantidade}>
+                {item.quantidade} unidades
+              </Text>
+
+              <View style={styles.cardStatus}>
+                <MaterialIcons
+                  name={
+                    estoqueBaixo
+                      ? 'warning'
+                      : 'check-circle'
+                  }
+                  size={25}
+                  color={
+                    estoqueBaixo
+                      ? styles.estoqueBaixo.color
+                      : styles.estoqueNormal.color
+                  }
+                />
+
+                <Text
+                  style={[
+                    styles.textoStatus,
+                    estoqueBaixo
+                      ? styles.estoqueBaixo
+                      : styles.estoqueNormal,
+                  ]}
+                >
+                  {estoqueBaixo
+                    ? 'Estoque Baixo'
+                    : 'Em Estoque'}
+                </Text>
+              </View>
+
+            </View>
+          );
+        }}
+      />
+
     </View>
   );
 }

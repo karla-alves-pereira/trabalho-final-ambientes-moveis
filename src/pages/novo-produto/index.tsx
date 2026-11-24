@@ -8,18 +8,50 @@ import {
 
 import { MaterialIcons } from '@expo/vector-icons';
 import { Input } from '../../components/input';
+import { useEstoque } from '../../context/EstoqueContext';
 import { styles } from './styles';
 
 export default function NovoProduto() {
+  const { cadastrarProduto } = useEstoque();
+
   const [nome, setNome] = useState('');
   const [preco, setPreco] = useState('');
   const [quantidade, setQuantidade] = useState('');
 
-  function cadastrarProduto() {
-    if (!nome || !preco || !quantidade) {
+  function realizarCadastro() {
+    if (!nome.trim() || !preco.trim() || !quantidade.trim()) {
       Alert.alert('Atenção', 'Preencha todos os campos.');
       return;
     }
+
+    const precoNumerico = Number(preco.replace(',', '.'));
+    const quantidadeNumerica = Number(quantidade);
+
+    if (!Number.isFinite(precoNumerico) || precoNumerico <= 0) {
+      Alert.alert('Atenção', 'Informe um preço válido.');
+      return;
+    }
+
+    if (
+      !Number.isInteger(quantidadeNumerica) ||
+      quantidadeNumerica < 0
+    ) {
+      Alert.alert(
+        'Atenção',
+        'Informe uma quantidade inteira e não negativa.'
+      );
+      return;
+    }
+
+    cadastrarProduto(
+      nome.trim(),
+      precoNumerico,
+      quantidadeNumerica
+    );
+
+    setNome('');
+    setPreco('');
+    setQuantidade('');
 
     Alert.alert('Sucesso', 'Produto cadastrado com sucesso!');
   }
@@ -36,7 +68,12 @@ export default function NovoProduto() {
 
       <View style={styles.form}>
         <View style={styles.inputContainer}>
-          <MaterialIcons name="sell" size={24} style={styles.icon} />
+          <MaterialIcons
+            name="sell"
+            size={24}
+            style={styles.icon}
+          />
+
           <Input
             style={styles.input}
             placeholder="Nome do Produto"
@@ -51,6 +88,7 @@ export default function NovoProduto() {
             size={24}
             style={styles.icon}
           />
+
           <Input
             style={styles.input}
             placeholder="Preço de Venda"
@@ -66,6 +104,7 @@ export default function NovoProduto() {
             size={24}
             style={styles.icon}
           />
+
           <Input
             style={styles.input}
             placeholder="Quantidade de entrada"
@@ -77,9 +116,11 @@ export default function NovoProduto() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={cadastrarProduto}
+          onPress={realizarCadastro}
         >
-          <Text style={styles.buttonText}>Cadastrar Produto</Text>
+          <Text style={styles.buttonText}>
+            Cadastrar Produto
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

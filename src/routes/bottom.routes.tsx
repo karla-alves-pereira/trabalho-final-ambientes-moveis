@@ -1,17 +1,23 @@
-
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import NovoProduto from '../pages/novo-produto';
-import SaidaProduto from '../pages/saida-produto';
 import ControleEstoque from '../pages/controle-estoque';
+import SaidaProduto from '../pages/saida-produto';
 
-const Tab = createBottomTabNavigator();
+export type BottomTabParamList = {
+  'Novo Produto': undefined;
+  'Controle de Estoque': undefined;
+  'Saída': undefined;
+};
+
+const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomRoutes() {
   return (
     <Tab.Navigator
+      initialRouteName="Novo Produto"
       screenOptions={{
         headerTitleAlign: 'center',
         tabBarActiveTintColor: '#2563EB',
@@ -25,19 +31,11 @@ export default function BottomRoutes() {
           title: 'Novo Produto',
           tabBarLabel: 'Novo Produto',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="inventory" color={color} size={size} />
-          ),
-        }}
-      />
-
-      <Tab.Screen
-        name="Saída"
-        component={SaidaProduto}
-        options={{
-          title: 'Saída de Produto',
-          tabBarLabel: 'Saída',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="output" color={color} size={size} />
+            <MaterialIcons
+              name="inventory"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
@@ -49,7 +47,27 @@ export default function BottomRoutes() {
           title: 'Controle de Estoque',
           tabBarLabel: 'Estoque',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="inventory-2" color={color} size={size} />
+            <MaterialIcons
+              name="inventory-2"
+              color={color}
+              size={size}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Saída"
+        component={SaidaProduto}
+        options={{
+          title: 'Saída de Produto',
+          tabBarLabel: 'Saída',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons
+              name="output"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
